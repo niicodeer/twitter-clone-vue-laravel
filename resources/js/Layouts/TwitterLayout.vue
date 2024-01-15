@@ -20,8 +20,11 @@ let tweet = ref("");
 let file = ref("");
 let showUpload = ref("");
 let uploadType = ref("");
-let randImg1 = ref(
+/* let randImg1 = ref(
   `https://picsum.photos/id/${(Math.random() * 200).toFixed(0)}/100`
+); */
+let randImg1 = ref(
+  'https://yt3.ggpht.com/yti/AGOGRCrBA_DXtIytv3OSpGI2FVHohLKiRB-7eKK5ExamSg=s88-c-k-c0x00ffffff-no-rj'
 );
 let randImg2 = ref(
   `https://picsum.photos/id/${(Math.random() * 200).toFixed(0)}/100`
@@ -32,10 +35,28 @@ const textareaInput = (e) => {
   textarea.value.style.height = `${e.target.scrollHeight}px`;
 };
 
-const getFyle = (e) => {
+const getFile = (e) => {
   file.value = e.target.files[0];
   showUpload.value = URL.createObjectURL(e.target.files[0]);
   uploadType.value = file.value.name.split(".").pop();
+};
+
+const addTweet = () => {
+  if (!tweet.value) return;
+
+  let data = new FormData();
+
+  data.append("tweet", tweet.value);
+  data.append("file", file.value);
+
+  router.post("/tweets", data);
+
+  createTweet.value = false;
+  tweet.value = "";
+  showUpload.value = "";
+  uploadType.value = "";
+
+  closeMessageBox();
 };
 
 const closeMessageBox = () => {
@@ -62,7 +83,7 @@ const closeMessageBox = () => {
         <MenuItem iconString="Profile" />
 
         <button
-        @click="createTweet=true"
+          @click="createTweet = true"
           class="lg:w-full mt-8 ml-2 text-white font-extrabold text-[22px] bg-[#1C9CEF] p-3 px-3 rounded-full cursor-pointer"
         >
           <span class="lg:block hidden">Tweet</span>
@@ -97,7 +118,7 @@ const closeMessageBox = () => {
         </div>
         <div class="absolute top-0 z-0 h-full overflow-auto scrollbar-hide">
           <div class="mt-[126px]"></div>
-          <slot/>
+          <slot />
           <div class="pb-4"></div>
         </div>
       </div>
@@ -187,13 +208,14 @@ const closeMessageBox = () => {
         class="flex items-center justify-between md:inline-block p-2 m-2 rounded-full cursor-pointer"
       >
         <div
-        @click="closeMessageBox"
+          @click="closeMessageBox"
           class="hover:bg-gray-800 inline-block p-2 rounded-full cursor-pointer"
         >
           <Close fillColor="#fff" :size="28" class="md:block hidden" />
           <ArrowLeft fillColor="#fff" :size="28" class="md:hidden block" />
         </div>
         <button
+          @click="addTweet()"
           :disabled="!tweet"
           :class="
             tweet ? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'
@@ -269,6 +291,7 @@ const closeMessageBox = () => {
               </div>
             </div>
             <button
+              @click="addTweet()"
               :disabled="!tweet"
               :class="
                 tweet ? 'bg-[#1c9cef] text-white' : 'bg-[#124d77] text-gray-400'
